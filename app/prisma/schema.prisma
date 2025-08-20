@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id          String     @id @default(cuid())
+  locationId  String
+  location    Location   @relation(fields: [locationId], references: [id])
+  label       String
+  type        String?
+  serial      String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  inspections Inspection[]
+  photos      Photo[]
+}
+
+model Inspection {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  date      DateTime @default(now())
+  inspector String
+  status    String
+  notes     String?
+  checklist Json?
+  createdAt DateTime @default(now())
+}
+
+model Photo {
+  id      String   @id @default(cuid())
+  itemId  String
+  item    Item     @relation(fields: [itemId], references: [id])
+  url     String
+  caption String?
+  takenAt DateTime @default(now())
+}
